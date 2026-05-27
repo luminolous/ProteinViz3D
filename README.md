@@ -14,13 +14,13 @@ Load any protein by PDB ID or upload your own `.pdb` file and explore it in real
 
 ## Features
 
-- 🔍 **Fetch by PDB ID** — pulls directly from [RCSB PDB](https://www.rcsb.org/)
-- 📁 **Upload `.pdb` file** — supports files up to 5 MB
-- 🎨 **Render styles** — Cartoon, Stick, Sphere, Wireframe
-- 🌈 **Color schemes** — Spectrum, Chain, Residue, Element (CPK)
-- 💫 **Molecular surface** — VDW surface with adjustable opacity
-- 📋 **Structure metadata** — title, method, resolution, chain count, atom count
-- 🖱️ **Drag & drop** — drop `.pdb` files directly onto the viewer
+- **Fetch by PDB ID** — pulls directly from [RCSB PDB](https://www.rcsb.org/)
+- **Upload `.pdb` file** — supports files up to 5 MB
+- **Render styles** — Cartoon, Stick, Sphere, Wireframe
+- **Color schemes** — Spectrum, Chain, Residue, Element (CPK)
+- **Molecular surface** — VDW surface with adjustable opacity
+- **Structure metadata** — title, method, resolution, chain count, atom count
+- **Drag & drop** — drop `.pdb` files directly onto the viewer
 
 ## Quick Start (local)
 
