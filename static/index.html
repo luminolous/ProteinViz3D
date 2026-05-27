@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ProteinViz3D — Interactive PDB Explorer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── Header ─────────────────────────────────────────── -->
+  <header class="header">
+    <div class="logo">
+      <svg class="logo-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="18" cy="8"  r="5" fill="var(--accent)"/>
+        <circle cx="8"  cy="26" r="5" fill="var(--accent2)"/>
+        <circle cx="28" cy="26" r="5" fill="var(--accent3)"/>
+        <line x1="18" y1="13" x2="8"  y2="21" stroke="var(--accent)"  stroke-width="1.5"/>
+        <line x1="18" y1="13" x2="28" y2="21" stroke="var(--accent2)" stroke-width="1.5"/>
+        <line x1="8"  y1="26" x2="28" y2="26" stroke="var(--accent3)" stroke-width="1.5"/>
+      </svg>
+      <span class="logo-text">Protein<span class="accent-text">Viz</span>3D</span>
+    </div>
+    <span class="header-tagline">Interactive PDB Structure Explorer</span>
+  </header>
+
+  <!-- ── App Layout ──────────────────────────────────────── -->
+  <div class="app-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+      <!-- Load panel -->
+      <div class="panel">
+        <div class="panel-title">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm1 11H9V9h2v4zm0-6H9V5h2v2z"/></svg>
+          Load Structure
+        </div>
+
+        <div class="input-row">
+          <input
+            type="text"
+            id="pdbInput"
+            class="pdb-input"
+            placeholder="PDB ID (e.g. 1HHO)"
+            maxlength="4"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button id="loadBtn" class="btn-primary">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd"/></svg>
+            Load
+          </button>
+        </div>
+
+        <div class="or-divider"><span>or</span></div>
+
+        <label class="upload-btn" for="fileInput">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
+          Upload .pdb file
+        </label>
+        <input type="file" id="fileInput" accept=".pdb" hidden />
+
+        <div class="examples-row">
+          <span class="examples-label">Quick load:</span>
+          <span class="ex-tag" data-id="1HHO" title="Oxyhemoglobin">1HHO</span>
+          <span class="ex-tag" data-id="1CRN" title="Crambin">1CRN</span>
+          <span class="ex-tag" data-id="6LU7" title="COVID-19 Protease">6LU7</span>
+          <span class="ex-tag" data-id="4HHB" title="Hemoglobin">4HHB</span>
+        </div>
+      </div>
+
+      <!-- Visualization controls (hidden until loaded) -->
+      <div class="panel" id="controlsPanel" style="display:none">
+        <div class="panel-title">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z"/></svg>
+          Visualization
+        </div>
+
+        <div class="ctrl-group">
+          <div class="ctrl-label">Render Style</div>
+          <div class="chip-group" id="styleGroup">
+            <button class="chip active" data-style="cartoon">Cartoon</button>
+            <button class="chip"        data-style="stick"  >Stick</button>
+            <button class="chip"        data-style="sphere" >Sphere</button>
+            <button class="chip"        data-style="line"   >Wire</button>
+          </div>
+        </div>
+
+        <div class="ctrl-group">
+          <div class="ctrl-label">Color Scheme</div>
+          <div class="chip-group" id="colorGroup">
+            <button class="chip active" data-color="spectrum">Spectrum</button>
+            <button class="chip"        data-color="chain"   >Chain</button>
+            <button class="chip"        data-color="residue" >Residue</button>
+            <button class="chip"        data-color="element" >Element</button>
+          </div>
+        </div>
+
+        <div class="ctrl-group">
+          <div class="ctrl-label">Surface</div>
+          <label class="toggle-row">
+            <div class="toggle-wrap">
+              <input type="checkbox" id="surfaceToggle" />
+              <span class="toggle-track"></span>
+            </div>
+            <span class="toggle-label">Molecular Surface</span>
+          </label>
+          <div id="surfaceOpacityRow" class="opacity-row hidden">
+            <span class="ctrl-label" style="margin-bottom:0">Opacity</span>
+            <input type="range" id="surfaceOpacity" min="10" max="100" value="70" />
+            <span id="opacityVal" class="mono-val">70%</span>
+          </div>
+        </div>
+
+        <button id="resetBtn" class="btn-secondary">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/></svg>
+          Reset View
+        </button>
+      </div>
+
+      <!-- Metadata (hidden until loaded) -->
+      <div class="panel" id="metaPanel" style="display:none">
+        <div class="panel-title">
+          <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+          Structure Info
+        </div>
+        <div id="metaContent" class="meta-list"></div>
+      </div>
+
+    </aside>
+
+    <!-- Main viewer -->
+    <main class="viewer-area">
+
+      <!-- Empty state -->
+      <div id="emptyState" class="state-overlay">
+        <svg class="state-icon" viewBox="0 0 80 80" fill="none">
+          <circle cx="40" cy="20" r="10" stroke="var(--accent)"  stroke-width="1.5" stroke-dasharray="4 2"/>
+          <circle cx="18" cy="58" r="10" stroke="var(--accent2)" stroke-width="1.5" stroke-dasharray="4 2"/>
+          <circle cx="62" cy="58" r="10" stroke="var(--accent3)" stroke-width="1.5" stroke-dasharray="4 2"/>
+          <line x1="40" y1="30" x2="18" y2="48" stroke="var(--border-bright)" stroke-width="1" stroke-dasharray="3 3"/>
+          <line x1="40" y1="30" x2="62" y2="48" stroke="var(--border-bright)" stroke-width="1" stroke-dasharray="3 3"/>
+          <line x1="18" y1="58" x2="62" y2="58" stroke="var(--border-bright)" stroke-width="1" stroke-dasharray="3 3"/>
+        </svg>
+        <p class="state-title">No Structure Loaded</p>
+        <p class="state-sub">Enter a PDB ID or upload a <code>.pdb</code> file to visualize a protein in 3D</p>
+      </div>
+
+      <!-- Loading state -->
+      <div id="loadingState" class="state-overlay hidden">
+        <div class="spinner"></div>
+        <p class="state-title" id="loadingText">Fetching structure…</p>
+      </div>
+
+      <!-- Error state -->
+      <div id="errorState" class="state-overlay hidden">
+        <svg class="state-icon error-icon" viewBox="0 0 80 80" fill="none">
+          <circle cx="40" cy="40" r="32" stroke="var(--error)" stroke-width="1.5"/>
+          <line x1="28" y1="28" x2="52" y2="52" stroke="var(--error)" stroke-width="2" stroke-linecap="round"/>
+          <line x1="52" y1="28" x2="28" y2="52" stroke="var(--error)" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <p class="state-title error-text">Error</p>
+        <p class="state-sub" id="errorText"></p>
+        <button class="btn-secondary" onclick="resetToEmpty()">Try Again</button>
+      </div>
+
+      <!-- 3Dmol viewer container -->
+      <div id="molViewer" class="hidden"></div>
+
+    </main>
+  </div>
+
+  <!-- 3Dmol.js (rendering happens in browser — CPU-safe) -->
+  <script src="https://cdn.jsdelivr.net/npm/3dmol@2.1.0/build/3Dmol-min.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
