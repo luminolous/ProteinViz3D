@@ -12,6 +12,12 @@ pinned: false
 An interactive 3D protein structure visualizer built with **FastAPI** + **3Dmol.js**.  
 Load any protein by PDB ID or upload your own `.pdb` file and explore it in real-time.
 
+## Overview
+
+![Image1](assets/img/preview-1.png)
+![Image2](assets/img/preview-2.png)
+![Image3](assets/img/preview-3.png)
+
 ## Features
 
 - **Fetch by PDB ID** — pulls directly from [RCSB PDB](https://www.rcsb.org/)
